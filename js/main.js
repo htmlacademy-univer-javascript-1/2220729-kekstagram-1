@@ -1,13 +1,8 @@
 const getRandomInt = (min, max) => {
-  if (min < 0) {
-    throw new Error('Минимальное значение должно быть больше либо равно нулю.');
-  }
-
-  if (min >= max) {
-    throw new Error('Максимальное значение должно быть больше, чем минимальное значение.');
-  }
-
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  const lower = Math.ceil(Math.abs(min));
+  const upper = Math.floor(Math.abs(max));
+  const result = Math.random() * (upper - lower + 1) + lower;
+  return Math.floor(result);
 };
 
 const checkMaxLength = (str, maxLength) => str.length <= maxLength;
