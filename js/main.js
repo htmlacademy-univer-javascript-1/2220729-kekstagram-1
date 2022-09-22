@@ -6,3 +6,6 @@ const getRandomInt = (min, max) => {
 };
 
 const checkMaxLength = (str, maxLength) => str.length <= maxLength;
+
+getRandomInt(1, 10);
+checkMaxLength('test', 3);
