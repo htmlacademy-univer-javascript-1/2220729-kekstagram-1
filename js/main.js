@@ -56,7 +56,9 @@ const createImage = () => ({
   comments: Array.from({length: getRandomPositiveInteger(1, 4)}, createComment)
 });
 
-Array.from({length: IMAGES_NUMBER}, createImage);
+const createImages = () => Array.from({length: IMAGES_NUMBER}, createImage);
+
+createImages();
 checkStringLength('test', 3);
 
 
