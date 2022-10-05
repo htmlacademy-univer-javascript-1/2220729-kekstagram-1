@@ -1,4 +1,5 @@
 import './util.js';
 import {createImages} from './data.js';
+import {createThumbnails} from './thumbnails.js';
 
-createImages();
+createThumbnails(createImages());
