@@ -41,7 +41,7 @@ const createImage = () => ({
   url: `photos/${photoNumberGenerator()}.jpg`,
   description: getRandomElementFromArray(PHOTO_DESCRIPTIONS),
   likes: getRandomPositiveInteger(15, 200),
-  comments: Array.from({length: getRandomPositiveInteger(1, 4)}, createComment)
+  comments: Array.from({length: getRandomPositiveInteger(1, 12)}, createComment)
 });
 
 const createImages = () => Array.from({length: PHOTO_NUMBER}, createImage);
