@@ -17,6 +17,4 @@ const uniqueNumberGenerator = () => {
 
 const isEscapeKey = (event) => event.key === 'Escape';
 
-const TAGS_REGEX = /^#[A-Za-zА-Яа-яЕё0-9]{1,19}$/i;
-
-export {getRandomPositiveInteger, getRandomElementFromArray, checkStringLength, uniqueNumberGenerator, isEscapeKey, TAGS_REGEX};
+export {getRandomPositiveInteger, getRandomElementFromArray, checkStringLength, uniqueNumberGenerator, isEscapeKey};
