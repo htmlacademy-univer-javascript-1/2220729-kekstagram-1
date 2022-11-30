@@ -1,8 +1,8 @@
 import {isEscapeKey} from './util.js';
 import {checkIfHashtagsRepeated, checkMaxHashtagsCount, checkIfHashtagCorrect, MAX_TAGS_NUMBER} from './validators.js';
-import {SmartSlider} from './slider.js';
+import {smartSlider} from './slider.js';
+import {scaleImage} from './scale-image.js';
 
-const SCALE_STEP = 25;
 const imgUploadForm = document.querySelector('.img-upload__form');
 const uploadFile = document.querySelector('#upload-file');
 const imgUploadOverlay = document.querySelector('.img-upload__overlay');
@@ -17,14 +17,13 @@ const pristine = new Pristine(imgUploadForm, {
 const scaleControlSmaller = document.querySelector('.scale__control--smaller');
 const scaleControlBigger = document.querySelector('.scale__control--bigger');
 const scaleControlValue = document.querySelector('.scale__control--value');
-const imgUploadPreview = document.querySelector('.img-upload__preview');
 const imgPreview = document.querySelector('.img-upload__preview img');
-const effectsRadioButtons = document.querySelectorAll('.effects__radio');
+const effectsList = document.querySelector('.effects__list');
 const effectLevelValue = document.querySelector('.effect-level__value');
 const effectLevelSlider = document.querySelector('.effect-level__slider');
 
-let scaleValue = 100;
-scaleControlValue.value = `${scaleValue}%`;
+const smartSliderFilters = smartSlider('none', effectLevelSlider, effectLevelValue);
+const scaleUploadImage = scaleImage(scaleControlValue, imgPreview);
 
 pristine.addValidator(textHashtags, checkIfHashtagsRepeated, 'Хештеги регистронезависимы и не должны повторяться');
 pristine.addValidator(textHashtags, checkMaxHashtagsCount, `Максимальное число хештегов - ${MAX_TAGS_NUMBER}`);
@@ -40,9 +39,19 @@ const closeUploadFileForm = (e) => {
   }
 };
 
+const applyChanges = (value) => {
+  imgPreview.classList.remove(`effects__preview--${smartSliderFilters.getCurrentFilter()}`);
+  smartSliderFilters.setCurrentFilter(value);
+  imgPreview.classList.add(`effects__preview--${smartSliderFilters.getCurrentFilter()}`);
+  effectLevelSlider.noUiSlider.updateOptions(smartSliderFilters.getOptions());
+  imgPreview.style.filter = smartSliderFilters.getStyles();
+};
+
 uploadFile.addEventListener('change', () => {
   imgUploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
+  scaleUploadImage.init();
+  applyChanges('none');
   document.addEventListener('keydown', closeUploadFileForm);
   uploadCancel.addEventListener('click', closeUploadFileForm);
 });
@@ -53,37 +62,20 @@ imgUploadForm.addEventListener('submit', (e) => {
   }
 });
 
-scaleControlSmaller.addEventListener('click', () => {
-  if (scaleValue !== 25) {
-    scaleValue -= SCALE_STEP;
-    scaleControlValue.value = `${scaleValue}%`;
-    imgUploadPreview.style.transform = `scale(${scaleValue / 100})`;
-  }
-});
+scaleControlSmaller.addEventListener('click', scaleUploadImage.decreaseValue);
+scaleControlBigger.addEventListener('click', scaleUploadImage.increaseValue);
 
-scaleControlBigger.addEventListener('click', () => {
-  if (scaleValue !== 100) {
-    scaleValue += SCALE_STEP;
-    scaleControlValue.value = `${scaleValue}%`;
-    imgUploadPreview.style.transform = `scale(${scaleValue / 100})`;
-  }
-});
-
-const smartSlider = SmartSlider('none', effectLevelSlider, effectLevelValue);
-
-noUiSlider.create(effectLevelSlider, smartSlider.getOptions());
+noUiSlider.create(effectLevelSlider, smartSliderFilters.getOptions());
 
 effectLevelSlider.noUiSlider.on('update', () => {
   effectLevelValue.value = effectLevelSlider.noUiSlider.get();
-  imgPreview.style.filter = smartSlider.getStyles();
+  imgPreview.style.filter = smartSliderFilters.getStyles();
 });
 
-effectsRadioButtons.forEach((radioButton) => {
-  radioButton.addEventListener('change', (e) => {
-    imgUploadPreview.classList.remove(`effects__preview--${smartSlider.getCurrentFilter()}`);
-    smartSlider.setCurrentFilter(e.target.value);
-    imgUploadPreview.classList.add(`effects__preview--${smartSlider.getCurrentFilter()}`);
-    effectLevelSlider.noUiSlider.updateOptions(smartSlider.getOptions());
-    imgPreview.style.filter = smartSlider.getStyles();
-  });
+effectsList.addEventListener('click', (e) => {
+  const effectsItems = e.target.closest('.effects__item');
+  if (effectsItems) {
+    const value = effectsItems.querySelector('.effects__radio').value;
+    applyChanges(value);
+  }
 });
