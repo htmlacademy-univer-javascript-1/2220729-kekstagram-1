@@ -90,4 +90,4 @@ const thumbnailClickHandler = (data) => {
   });
 };
 
-export {thumbnailClickHandler};
+export {thumbnailClickHandler, closeModal};
