@@ -2,6 +2,7 @@ import {isEscapeKey} from './util.js';
 import {checkIfHashtagsRepeated, checkMaxHashtagsCount, checkIfHashtagCorrect, MAX_TAGS_NUMBER} from './validators.js';
 import {smartSlider} from './slider.js';
 import {scaleImage} from './scale-image.js';
+import {sendData} from './api.js';
 
 const imgUploadForm = document.querySelector('.img-upload__form');
 const uploadFile = document.querySelector('#upload-file');
@@ -21,6 +22,7 @@ const imgPreview = document.querySelector('.img-upload__preview img');
 const effectsList = document.querySelector('.effects__list');
 const effectLevelValue = document.querySelector('.effect-level__value');
 const effectLevelSlider = document.querySelector('.effect-level__slider');
+const imgUploadSubmit = document.querySelector('.img-upload__submit');
 
 const smartSliderFilters = smartSlider('none', effectLevelSlider, effectLevelValue);
 const scaleUploadImage = scaleImage(scaleControlValue, imgPreview);
@@ -28,16 +30,6 @@ const scaleUploadImage = scaleImage(scaleControlValue, imgPreview);
 pristine.addValidator(textHashtags, checkIfHashtagsRepeated, 'Хештеги регистронезависимы и не должны повторяться');
 pristine.addValidator(textHashtags, checkMaxHashtagsCount, `Максимальное число хештегов - ${MAX_TAGS_NUMBER}`);
 pristine.addValidator(textHashtags, checkIfHashtagCorrect, 'Один из введённых вами хештегов некорректен');
-
-const closeUploadFileForm = (e) => {
-  if ((isEscapeKey(e) && document.activeElement !== textHashtags && document.activeElement !== textDescription) || e.type === 'click') {
-    imgUploadOverlay.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-    document.removeEventListener('keydown', closeUploadFileForm);
-    uploadCancel.removeEventListener('click', closeUploadFileForm);
-    imgUploadForm.reset();
-  }
-};
 
 const applyChanges = (value) => {
   imgPreview.classList.remove(`effects__preview--${smartSliderFilters.getCurrentFilter()}`);
@@ -47,20 +39,63 @@ const applyChanges = (value) => {
   imgPreview.style.filter = smartSliderFilters.getStyles();
 };
 
+const closeUploadFileForm = (e = null, clear = true) => {
+  if (e === null || (isEscapeKey(e) && document.activeElement !== textHashtags && document.activeElement !== textDescription) || e.type === 'click') {
+    imgUploadOverlay.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    document.removeEventListener('keydown', closeUploadFileForm);
+    uploadCancel.removeEventListener('click', closeUploadFileForm);
+
+    if (clear) {
+      imgUploadForm.reset();
+      scaleUploadImage.init();
+      applyChanges('none');
+    }
+  }
+};
+
 uploadFile.addEventListener('change', () => {
   imgUploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  scaleUploadImage.init();
-  applyChanges('none');
   document.addEventListener('keydown', closeUploadFileForm);
   uploadCancel.addEventListener('click', closeUploadFileForm);
 });
 
-imgUploadForm.addEventListener('submit', (e) => {
-  if (!pristine.validate()) {
+const blockSubmitButton = () => {
+  imgUploadSubmit.disabled = true;
+  imgUploadSubmit.textContent = 'Публикация...';
+};
+
+const unblockSubmitButton = () => {
+  imgUploadSubmit.disabled = false;
+  imgUploadSubmit.textContent = 'Опубликовать';
+};
+
+const setUserFormSubmit = (onSuccess, onError) => {
+  imgUploadForm.addEventListener('submit', (e) => {
     e.preventDefault();
-  }
-});
+
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData(
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+
+          // scaleUploadImage.init();
+          // applyChanges('none');
+        },
+        () => {
+          onError();
+          // showAlert('Не удалось отправить форму. Попробуйте ещё раз');
+          unblockSubmitButton();
+        },
+        new FormData(imgUploadForm)
+      );
+    }
+  });
+};
 
 scaleControlSmaller.addEventListener('click', scaleUploadImage.decreaseValue);
 scaleControlBigger.addEventListener('click', scaleUploadImage.increaseValue);
@@ -79,3 +114,8 @@ effectsList.addEventListener('click', (e) => {
     applyChanges(value);
   }
 });
+
+export {
+  setUserFormSubmit,
+  closeUploadFileForm
+};
