@@ -12,6 +12,8 @@ const socialCaption = document.querySelector('.social__caption');
 const socialCommentCount = document.querySelector('.social__comment-count');
 const commentsLoader = document.querySelector('.comments-loader');
 const bigPictureCancel = document.querySelector('.big-picture__cancel');
+const commentTemplate = document.querySelector('#comment').content;
+const documentFragment = document.createDocumentFragment();
 
 const closeModal = (e) => {
   if (isEscapeKey(e) || e.type === 'click') {
@@ -22,34 +24,22 @@ const closeModal = (e) => {
   }
 };
 
-const drawComment = (comment) => {
-  const li = document.createElement('li');
-  li.classList.add('social__comment');
-  const img = document.createElement('img');
-  img.classList.add('social__picture');
-  img.src = comment.avatar;
-  img.alt = comment.name;
-  img.width = 35;
-  img.height = 35;
-  li.append(img);
-  const p = document.createElement('p');
-  p.classList.add('social__text');
-  p.textContent = comment.message;
-  li.append(p);
-  socialComments.append(li);
-};
-
-const drawComments = (comments, count) => {
+const drawComments = (comments) => {
   socialComments.innerHTML = '';
-  comments.forEach((comment, index) => {
-    if (count > index) {
-      drawComment(comment);
-    }
+
+  comments.forEach((comment) => {
+    const commentNode = commentTemplate.cloneNode(true);
+    commentNode.querySelector('.social__picture').src = comment.avatar;
+    commentNode.querySelector('.social__picture').alt = comment.name;
+    commentNode.querySelector('.social__text').textContent = comment.message;
+    documentFragment.append(commentNode);
   });
+
+  socialComments.append(documentFragment);
 };
 
 const showCommentsCount = (image, commentsNumber) => {
-  drawComments(image.comments, commentsNumber);
+  drawComments(image.comments.slice(0, commentsNumber));
   socialCommentCount.innerHTML = `${commentsNumber > commentsCount.textContent ? commentsCount.textContent : commentsNumber} из `;
   socialCommentCount.append(commentsCount);
   socialCommentCount.innerHTML += ' комментариев';
@@ -69,6 +59,7 @@ const openModal = (image) => {
   commentsLoader.classList.remove('hidden');
   showCommentsCount(image, commentsNumber);
 
+  // TODO: переделать так, чтобы здесь не плодились обработчики
   commentsLoader.addEventListener('click', () => {
     commentsNumber += MAX_COMMENT_NUMBER;
     showCommentsCount(image, commentsNumber);
@@ -85,7 +76,7 @@ const thumbnailClickHandler = (data) => {
     const picture = e.target.closest('.picture');
 
     if (picture) {
-      openModal(data[picture.dataset.index]);
+      openModal(data.find((photo) => photo.id === Number(picture.dataset.index)));
     }
   });
 };

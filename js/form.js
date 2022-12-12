@@ -54,9 +54,10 @@ const closeUploadFileForm = (e = null, clear = true) => {
   }
 };
 
-uploadFile.addEventListener('change', () => {
+uploadFile.addEventListener('change', (e) => {
   imgUploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
+  imgPreview.src = URL.createObjectURL(e.target.files[0]);
   document.addEventListener('keydown', closeUploadFileForm);
   uploadCancel.addEventListener('click', closeUploadFileForm);
 });
@@ -82,13 +83,9 @@ const setUserFormSubmit = (onSuccess, onError) => {
         () => {
           onSuccess();
           unblockSubmitButton();
-
-          // scaleUploadImage.init();
-          // applyChanges('none');
         },
         () => {
           onError();
-          // showAlert('Не удалось отправить форму. Попробуйте ещё раз');
           unblockSubmitButton();
         },
         new FormData(imgUploadForm)
