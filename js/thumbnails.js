@@ -23,4 +23,6 @@ const createThumbnails = (data) => {
   pictures.append(documentFragment);
 };
 
-export {createThumbnails};
+export {
+  createThumbnails
+};
