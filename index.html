@@ -47,7 +47,7 @@
                   <!-- Изменение размера изображения -->
                   <fieldset class="img-upload__scale  scale">
                     <button type="button" class="scale__control  scale__control--smaller">Уменьшить</button>
-                    <input type="text" class="scale__control  scale__control--value" value="55%" title="Image Scale" name="scale" readonly required>
+                    <input type="text" class="scale__control  scale__control--value" value="100%" title="Image Scale" name="scale" readonly required>
                     <button type="button" class="scale__control  scale__control--bigger">Увеличить</button>
                   </fieldset>
 
@@ -231,6 +231,14 @@
   <!-- Экран загрузки изображения -->
   <template id="messages">
     <div class="img-upload__message  img-upload__message--loading">Загружаем...</div>
+  </template>
+
+  <!-- Комментарий пользователя -->
+  <template id="comment">
+    <li class="social__comment">
+      <img class="social__picture" src="img/avatar-3.svg" alt="Аватар комментатора фотографии" width="35" height="35">
+      <p class="social__text">Да это фоташоп!!!!!!!!</p>
+    </li>
   </template>
 
   <script src="pristine/pristine.min.js"></script>
