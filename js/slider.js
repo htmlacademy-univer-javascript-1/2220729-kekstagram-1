@@ -23,7 +23,7 @@ const sliderStyles = {
   'heat': (value) => `brightness(${value})`
 };
 
-const smartSlider = (filter, levelSlider, levelValue) => {
+const makeSlider = (filter, levelSlider, levelValue) => {
   let currentFilter = filter;
 
   const hiddenIfFilterIsNone = () => {
@@ -55,5 +55,5 @@ const smartSlider = (filter, levelSlider, levelValue) => {
 };
 
 export {
-  smartSlider
+  makeSlider
 };
