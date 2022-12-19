@@ -11,7 +11,7 @@ const commentsService = () => {
   let commentsCount = 0;
   let comments = [];
 
-  const renderComments = (activeComments) => {
+  const render = (activeComments) => {
     socialComments.innerHTML = '';
 
     activeComments.forEach((comment) => {
@@ -29,7 +29,7 @@ const commentsService = () => {
     const newCommentNumber = commentsNumber + MAX_COMMENT_NUMBER;
     commentsNumber = newCommentNumber >= commentsCount ? commentsCount : newCommentNumber;
 
-    renderComments(comments.slice(0, commentsNumber));
+    render(comments.slice(0, commentsNumber));
 
     socialCommentCount.textContent = `${commentsNumber} из ${commentsCount} комментариев`;
 

@@ -7,7 +7,7 @@ const imgFiltersForm = document.querySelector('.img-filters__form');
 
 const filters = {
   'filter-default': (data) => data,
-  'filter-random': (data) => shuffleArray(data.slice()),
+  'filter-random': (data) => shuffleArray(data.slice()).slice(0, 10),
   'filter-discussed': (data) => data.slice().sort((a, b) => b.comments.length - a.comments.length)
 };
 

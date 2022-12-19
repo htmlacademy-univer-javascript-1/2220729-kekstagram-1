@@ -1,6 +1,6 @@
 import {isEscapeKey} from './util.js';
 import {checkIfHashtagsRepeated, checkMaxHashtagsCount, checkIfHashtagCorrect, MAX_TAGS_NUMBER, checkFileType} from './validators.js';
-import {smartSlider} from './slider.js';
+import {makeSlider} from './slider.js';
 import {scaleImage} from './scale-image.js';
 import {sendData} from './api.js';
 import {showError} from './alerts.js';
@@ -20,7 +20,7 @@ const effectLevelValue = document.querySelector('.effect-level__value');
 const effectLevelSlider = document.querySelector('.effect-level__slider');
 const imgUploadSubmit = document.querySelector('.img-upload__submit');
 
-const smartSliderFilters = smartSlider('none', effectLevelSlider, effectLevelValue);
+const smartSliderFilters = makeSlider('none', effectLevelSlider, effectLevelValue);
 const scaleUploadImage = scaleImage(scaleControlValue, imgPreview);
 const pristine = new Pristine(imgUploadForm, {
   classTo: 'img-upload__field-wrapper',
